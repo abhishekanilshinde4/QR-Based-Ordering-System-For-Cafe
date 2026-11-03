@@ -1,0 +1,82 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+model Menu {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  category    String
+  price       Float
+  image_url   String
+  available   Boolean     @default(true)
+  is_veg      Boolean     @default(true)
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  order_items Order_Items[]
+}
+
+model Orders {
+  id             String        @id @default(uuid())
+  order_number   Int           @unique
+  table_number   Int
+  customer_name  String?
+  customer_phone String?
+  total_amount   Float
+  status         String        @default("pending") // pending, preparing, ready, served, completed, cancelled
+  notes          String?
+  completed      Boolean       @default(false)
+  created_at     DateTime      @default(now())
+  items          Order_Items[]
+  review         Review?
+}
+
+model Order_Items {
+  id         String   @id @default(uuid())
+  order_id   String
+  order      Orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  menu_id    String?
+  menu       Menu?    @relation(fields: [menu_id], references: [id], onDelete: SetNull)
+  item_name  String
+  item_price Float
+  quantity   Int
+  notes      String?
+}
+
+model Tables {
+  id           String   @id @default(uuid())
+  table_number Int      @unique
+  qr_code      String
+}
+
+model Admin {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  password_hash String
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  order_id      String?  @unique
+  order         Orders?  @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  customer_name String?
+  table_number  Int
+  rating        Int      @default(5)
+  review_text   String?
+  created_at    DateTime @default(now())
+}
+
+model WaiterCall {
+  id            String   @id @default(uuid())
+  table_number  Int
+  customer_name String?
+  reason        String   @default("General Assistance") // Water, Bill, Cutlery, General Assistance
+  status        String   @default("pending") // pending, attended
+  created_at    DateTime @default(now())
+}

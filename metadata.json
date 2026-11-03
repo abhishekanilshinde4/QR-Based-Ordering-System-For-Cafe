@@ -1,0 +1,8 @@
+{
+  "name": "Café Chai Affair - QR Ordering System",
+  "description": "QR-based cafe ordering system for Café Chai Affair with live order management and kitchen dashboard.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
